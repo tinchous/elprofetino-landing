@@ -1,0 +1,192 @@
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar , datetime, datetime, datetime} from "drizzle-orm/mysql-core";
+
+/**
+ * Core user table backing auth flow.
+ * Extend this file with additional tables as your product grows.
+ * Columns use camelCase to match both database fields and generated types.
+ */
+export const users = mysqlTable("users", {
+  /**
+   * Surrogate primary key. Auto-incremented numeric value managed by the database.
+   * Use this for relations between tables.
+   */
+  id: int("id").autoincrement().primaryKey(),
+  /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
+  openId: varchar("openId", { length: 64 }).notNull().unique(),
+  name: text("name"),
+  email: varchar("email", { length: 320 }),
+  loginMethod: varchar("loginMethod", { length: 64 }),
+  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
+});
+
+export type User = typeof users.$inferSelect;
+export type InsertUser = typeof users.$inferInsert;
+
+/**
+ * Tabla de estudiantes - extiende la información de usuarios
+ */
+export const students = mysqlTable("students", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id),
+  level: varchar("level", { length: 50 }), // "7-9" o "bachillerato"
+  institution: varchar("institution", { length: 100 }), // "Liceo", "UTU", "Liceo Militar", etc.
+  subjects: text("subjects"), // JSON array: ["matematica", "fisica"]
+  phone: varchar("phone", { length: 20 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Student = typeof students.$inferSelect;
+export type InsertStudent = typeof students.$inferInsert;
+
+/**
+ * Tabla de clases programadas
+ */
+export const classes = mysqlTable("classes", {
+  id: int("id").autoincrement().primaryKey(),
+  studentId: int("studentId").notNull().references(() => students.id),
+  subject: varchar("subject", { length: 50 }).notNull(), // "matematica" o "fisica"
+  scheduledAt: datetime("scheduledAt").notNull(),
+  duration: int("duration").notNull().default(60), // minutos
+  status: mysqlEnum("status", ["scheduled", "completed", "cancelled"]).default("scheduled").notNull(),
+  topic: text("topic"), // Tema de la clase
+  notes: text("notes"), // Notas del profesor
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Class = typeof classes.$inferSelect;
+export type InsertClass = typeof classes.$inferInsert;
+
+/**
+ * Tabla de progreso del estudiante por tema
+ */
+export const progress = mysqlTable("progress", {
+  id: int("id").autoincrement().primaryKey(),
+  studentId: int("studentId").notNull().references(() => students.id),
+  subject: varchar("subject", { length: 50 }).notNull(),
+  topic: varchar("topic", { length: 200 }).notNull(),
+  level: int("level").notNull().default(0), // 0-100 nivel de dominio
+  lastPracticed: datetime("lastPracticed"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Progress = typeof progress.$inferSelect;
+export type InsertProgress = typeof progress.$inferInsert;
+
+/**
+ * Tabla de ejercicios asignados
+ */
+export const assignments = mysqlTable("assignments", {
+  id: int("id").autoincrement().primaryKey(),
+  studentId: int("studentId").notNull().references(() => students.id),
+  subject: varchar("subject", { length: 50 }).notNull(),
+  topic: varchar("topic", { length: 200 }).notNull(),
+  description: text("description").notNull(),
+  dueDate: datetime("dueDate"),
+  status: mysqlEnum("status", ["pending", "completed"]).default("pending").notNull(),
+  completedAt: datetime("completedAt"),
+  score: int("score"), // 0-100
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Assignment = typeof assignments.$inferSelect;
+export type InsertAssignment = typeof assignments.$inferInsert;
+
+/**
+ * Tabla de acceso a herramientas PEO
+ */
+export const peoToolAccess = mysqlTable("peoToolAccess", {
+  id: int("id").autoincrement().primaryKey(),
+  studentId: int("studentId").notNull().references(() => students.id),
+  toolName: varchar("toolName", { length: 50 }).notNull(), // "tizaia", "generatusejercicios", "tuexamenpersonal"
+  accessCount: int("accessCount").notNull().default(0),
+  lastAccessed: datetime("lastAccessed"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PeoToolAccess = typeof peoToolAccess.$inferSelect;
+export type InsertPeoToolAccess = typeof peoToolAccess.$inferInsert;
+/**
+ * Tabla de exámenes generados
+ */
+export const exams = mysqlTable("exams", {
+  id: int("id").autoincrement().primaryKey(),
+  studentId: int("studentId").notNull().references(() => students.id),
+  title: varchar("title", { length: 200 }).notNull(),
+  topics: text("topics").notNull(), // JSON array: ["Derivadas", "Integrales"]
+  duration: int("duration").notNull(), // minutos
+  difficulty: varchar("difficulty", { length: 20 }).notNull(), // "basico", "intermedio", "avanzado"
+  totalPoints: int("totalPoints").notNull(),
+  status: mysqlEnum("status", ["in_progress", "completed", "abandoned"]).default("in_progress").notNull(),
+  startedAt: datetime("startedAt").notNull(),
+  completedAt: datetime("completedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Exam = typeof exams.$inferSelect;
+export type InsertExam = typeof exams.$inferInsert;
+
+/**
+ * Tabla de preguntas del examen
+ */
+export const examQuestions = mysqlTable("examQuestions", {
+  id: int("id").autoincrement().primaryKey(),
+  examId: int("examId").notNull().references(() => exams.id),
+  questionNumber: int("questionNumber").notNull(),
+  type: mysqlEnum("type", ["multiple_choice", "true_false", "open_ended"]).notNull(),
+  question: text("question").notNull(),
+  options: text("options"), // JSON array para multiple choice: ["a) ...", "b) ...", "c) ...", "d) ..."]
+  correctAnswer: text("correctAnswer").notNull(), // Para multiple choice: "a", para true_false: "true"/"false", para open_ended: respuesta esperada
+  points: int("points").notNull(),
+  topic: varchar("topic", { length: 200 }).notNull(), // Para tracking de temas débiles
+  explanation: text("explanation"), // Explicación de la respuesta correcta
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ExamQuestion = typeof examQuestions.$inferSelect;
+export type InsertExamQuestion = typeof examQuestions.$inferInsert;
+
+/**
+ * Tabla de respuestas del estudiante
+ */
+export const examAnswers = mysqlTable("examAnswers", {
+  id: int("id").autoincrement().primaryKey(),
+  examId: int("examId").notNull().references(() => exams.id),
+  questionId: int("questionId").notNull().references(() => examQuestions.id),
+  studentAnswer: text("studentAnswer"), // Respuesta del estudiante
+  isCorrect: int("isCorrect"), // 1 = correcto, 0 = incorrecto, null = no evaluado aún
+  pointsEarned: int("pointsEarned").default(0),
+  answeredAt: datetime("answeredAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ExamAnswer = typeof examAnswers.$inferSelect;
+export type InsertExamAnswer = typeof examAnswers.$inferInsert;
+
+/**
+ * Tabla de resultados y evaluación del examen
+ */
+export const examResults = mysqlTable("examResults", {
+  id: int("id").autoincrement().primaryKey(),
+  examId: int("examId").notNull().references(() => exams.id).unique(),
+  studentId: int("studentId").notNull().references(() => students.id),
+  totalPoints: int("totalPoints").notNull(),
+  pointsEarned: int("pointsEarned").notNull(),
+  percentage: int("percentage").notNull(), // 0-100
+  weakTopics: text("weakTopics"), // JSON array ordenado por prioridad: [{"topic": "Derivadas", "score": 40}, ...]
+  recommendations: text("recommendations"), // Texto generado por IA con recomendaciones
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ExamResult = typeof examResults.$inferSelect;
+export type InsertExamResult = typeof examResults.$inferInsert;
+
+

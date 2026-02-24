@@ -1,0 +1,288 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  
+  /* Custom colors for ElProfeTino brand */
+  --color-space-navy: oklch(0.15 0.02 250);
+  --color-space-navy-light: oklch(0.22 0.03 250);
+  --color-cyan-bright: oklch(0.75 0.15 210);
+  --color-gold: oklch(0.80 0.15 85);
+  --color-green-success: oklch(0.75 0.20 145);
+  --color-orange-accent: oklch(0.65 0.18 35);
+}
+
+/* Design Philosophy: Cosmic Education - Futurismo Educativo Espacial
+   - Deep space navy background (#0a1628) as infinite knowledge canvas
+   - Cyan (#00d4ff) for AI and innovation
+   - Gold (#ffd700) for academic success
+   - Green (#00ff88) for progress and approval
+   - Typography: Space Grotesk (display), Inter (body), JetBrains Mono (numbers)
+*/
+
+:root {
+  --primary: var(--color-cyan-bright);
+  --primary-foreground: oklch(0.15 0.02 250);
+  --sidebar-primary: var(--color-cyan-bright);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --chart-1: var(--color-cyan-bright);
+  --chart-2: var(--color-gold);
+  --chart-3: var(--color-green-success);
+  --chart-4: var(--color-orange-accent);
+  --chart-5: var(--color-space-navy-light);
+  --radius: 1rem;
+  --background: var(--color-space-navy);
+  --foreground: oklch(0.95 0.01 250);
+  --card: var(--color-space-navy-light);
+  --card-foreground: oklch(0.95 0.01 250);
+  --popover: var(--color-space-navy-light);
+  --popover-foreground: oklch(0.95 0.01 250);
+  --secondary: var(--color-space-navy-light);
+  --secondary-foreground: oklch(0.85 0.01 250);
+  --muted: oklch(0.30 0.03 250);
+  --muted-foreground: oklch(0.65 0.02 250);
+  --accent: var(--color-cyan-bright);
+  --accent-foreground: oklch(0.15 0.02 250);
+  --destructive: oklch(0.60 0.20 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.30 0.03 250 / 40%);
+  --input: oklch(0.30 0.03 250 / 50%);
+  --ring: var(--color-cyan-bright);
+  --sidebar: var(--color-space-navy-light);
+  --sidebar-foreground: oklch(0.95 0.01 250);
+  --sidebar-accent: var(--color-cyan-bright);
+  --sidebar-accent-foreground: oklch(0.15 0.02 250);
+  --sidebar-border: oklch(0.30 0.03 250 / 40%);
+  --sidebar-ring: var(--color-cyan-bright);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 700;
+  }
+  
+  .font-display {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+  
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  [type="reset"]:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled) {
+    @apply cursor-pointer;
+  }
+}
+
+@layer components {
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .flex {
+    min-height: 0;
+    min-width: 0;
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+      max-width: 1280px;
+    }
+  }
+  
+  /* Cosmic Education Design Elements */
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.3), 0 0 40px rgba(0, 212, 255, 0.1);
+  }
+  
+  .glow-gold {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), 0 0 40px rgba(255, 215, 0, 0.1);
+  }
+  
+  .glow-green {
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3), 0 0 40px rgba(0, 255, 136, 0.1);
+  }
+  
+  .border-glow-cyan {
+    border: 2px solid rgba(0, 212, 255, 0.5);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.3), inset 0 0 10px rgba(0, 212, 255, 0.1);
+  }
+  
+  .border-glow-gold {
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3), inset 0 0 10px rgba(255, 215, 0, 0.1);
+  }
+  
+  .border-glow-green {
+    border: 2px solid rgba(0, 255, 136, 0.5);
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.3), inset 0 0 10px rgba(0, 255, 136, 0.1);
+  }
+  
+  .text-glow-cyan {
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5), 0 0 20px rgba(0, 212, 255, 0.3);
+  }
+  
+  .text-glow-gold {
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+  
+  /* Starfield background animation */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+}
+
+/* Custom scrollbar for cosmic theme */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: oklch(0.15 0.02 250);
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(0.75 0.15 210);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.85 0.15 210);
+}
+
+/* Mathematical notation styles */
+.math-content {
+  font-size: 1.05em;
+}
+
+.math-content .katex {
+  font-size: 1.1em;
+}
+
+.math-block {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: oklch(0.20 0.02 250 / 0.3);
+  border-left: 3px solid oklch(0.75 0.15 210);
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.math-block .katex-display {
+  margin: 0;
+}
+
+.math-error {
+  color: oklch(0.65 0.20 25);
+  font-family: monospace;
+  background: oklch(0.65 0.20 25 / 0.1);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+}
+
+/* Improve readability of math in dark theme */
+.katex {
+  color: var(--foreground);
+}
+
+.katex .mord,
+.katex .mbin,
+.katex .mrel,
+.katex .mop,
+.katex .mpunct {
+  color: inherit;
+}
+
+/* Highlight variables and constants */
+.katex .mord.mathdefault {
+  color: oklch(0.75 0.15 210);
+}
+
+/* Operators in gold */
+.katex .mbin,
+.katex .mrel {
+  color: oklch(0.80 0.15 85);
+}

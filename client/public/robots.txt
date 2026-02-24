@@ -1,0 +1,10 @@
+# robots.txt para ElProfeTino - Plataforma Educativa Online
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://tuplataformaeducativa.online/sitemap.xml
+
+# Bloquear archivos del sistema
+Disallow: /__manus__/
